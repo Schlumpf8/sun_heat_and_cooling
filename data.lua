@@ -23,7 +23,7 @@ data:extend
     icon = icons .. "sun_heat.png",
     subgroup = "obstacles",
     factoriopedia_simulation = simulations.factoriopedia_lightning,
-    damage = {amount = 1, type = "fire"},
+    damage = {amount = 0.15, type = "fire"},
     energy = "100MJ",
     time_to_damage = 1,
     effect_duration = 30,

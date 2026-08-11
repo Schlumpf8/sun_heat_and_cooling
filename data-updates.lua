@@ -18,7 +18,7 @@ local exemptlist = {
 
 if data.raw.planet["moshine"] then
 
-  local freq = 100
+  local freq = 15
   if settings.startup["moshine_heat_intensity"] and settings.startup["moshine_heat_intensity"].value then
     freq = settings.startup["moshine_heat_intensity"].value
   end
