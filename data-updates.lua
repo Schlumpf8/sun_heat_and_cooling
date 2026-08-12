@@ -42,8 +42,13 @@ if data.raw.planet["moshine"] then
     {
       {
         type = "id",
-        string = "sun_heat_cooler_2",
+        string = "sun_heat_cooler_1",
         priority_bonus = 10000,
+      },
+      {
+        type = "id",
+        string = "sun_heat_cooler_2",
+        priority_bonus = 10001,
       },
       {
         type = "impact-soundset",

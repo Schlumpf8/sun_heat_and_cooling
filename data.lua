@@ -158,16 +158,16 @@ data:extend
         layers = {
           {
             filename = entity .. "sun_heat_cooler_1/sun_heat_cooler_1.png",
-            width = 320,
-            height = 320,
+            width = 128,
+            height = 128,
             line_length = 1,
             priority = "high",
             scale = 0.5,
           },
           {
             filename = entity .. "sun_heat_cooler_1/sun_heat_cooler_1-shadow.png",
-            width = 320,
-            height = 320,
+            width = 128,
+            height = 128,
             line_length = 1,
             priority = "high",
             draw_as_shadow = true,
@@ -184,7 +184,8 @@ data:extend
           },
         }
       },
-      charge_animation = {
+      charge_animation = nil,
+      --[[{
         layers =
         {
           {
@@ -201,7 +202,7 @@ data:extend
             animation_speed = 1/10,
           }
         }
-      },
+      },]]
       charge_animation_is_looped = true,
       charge_cooldown = 10,
     },
@@ -236,8 +237,8 @@ data:extend
     expires = false,
     animation = {
       filename = entity .. "sun_heat_cooler_1/sun_heat_cooler_1-remnants.png",
-      width = 320,
-      height = 320,
+      width = 128,
+      height = 128,
       line_length = 1,
       direction_count = 1,
       scale = 0.5
@@ -322,7 +323,8 @@ data:extend
           },
         }
       },
-      charge_animation = {
+      charge_animation = nil,
+      --[[{
         layers =
         {
           {
@@ -339,7 +341,7 @@ data:extend
             animation_speed = 1/10,
           }
         }
-      },
+      },]]
       charge_animation_is_looped = true,
       charge_cooldown = 10,
     },
