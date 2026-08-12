@@ -42,7 +42,7 @@ if data.raw.planet["moshine"] then
     {
       {
         type = "id",
-        string = "sun_heat_cooler_1",
+        string = "sun_heat_cooler_2",
         priority_bonus = 10000,
       },
       {
