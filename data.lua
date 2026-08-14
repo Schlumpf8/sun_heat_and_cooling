@@ -15,8 +15,62 @@ local item_tints = require("__base__.prototypes.item-tints")
 local simulations = require("__space-age__.prototypes.factoriopedia-simulations")
 
 if mods["Moshine"] then
-data:extend
-{
+  local damage = 100
+  if settings.startup["moshine_heat_damage_amount"] and settings.startup["moshine_heat_damage_amount"].value then
+    damage = settings.startup["moshine_heat_damage_amount"].value
+  end
+
+
+  local sunheatsim =
+  {
+    planet = "moshine",
+    init =
+    [[
+      game.simulation.camera_position = {0, 2.5}
+      for x = -8, 8, 1 do
+        for y = -3, 4 do
+          game.surfaces[1].set_tiles{{position = {x, y}, name = "moshine-hot-swamp"}}
+        end
+      end
+    ]]
+  }
+
+
+  local make_collector_simulation = function(name, zoom, X, Y)
+    return
+    [[
+      require("__core__/lualib/story")
+      game.simulation.camera_zoom = ]]..zoom..[[
+      game.simulation.camera_position = {]]..X..[[, ]]..Y..[[}
+      game.surfaces[1].create_entity{name = "]]..name..[[", position = {0, 0}}
+      for x = -8, 8, 1 do
+        for y = -3, 4 do
+          game.surfaces[1].set_tiles{{position = {x, y}, name = "moshine-hot-swamp"}}
+        end
+      end
+      local story_table =
+      {
+        {
+          {
+            name = "start",
+            action = function() game.surfaces[1].execute_lightning{name = "sun_heat", position = {0, 2}} end
+          },
+          {
+            condition = story_elapsed_check(1),
+            action = function() story_jump_to(storage.story, "start") end
+          }
+        }
+      }
+      tip_story_init(story_table)
+    ]]
+  end
+  local sun_heat_cooler_1sim = { planet = "moshine", init = make_collector_simulation("sun_heat_cooler_1", "3", "0.5", "0") }
+  local sun_heat_cooler_2sim = { planet = "moshine", init = make_collector_simulation("sun_heat_cooler_2", "2", "1", "0") }
+
+
+
+
+data:extend({
 
 --    ██   ██ ███████  █████  ████████ 
 --    ██   ██ ██      ██   ██    ██    
@@ -29,13 +83,13 @@ data:extend
     icon = icons .. "sun_heat.png",
     subgroup = "obstacles",
     flags = {"not-selectable-in-game"},
-    factoriopedia_simulation = simulations.factoriopedia_lightning,
+    factoriopedia_simulation = sunheatsim,
     damage = 
     {
-      amount = 0.15,
+      amount = 0.15 * (damage/100),
       type = "fire"
     },
-    energy = "100MJ",
+    energy = "10MJ",
     time_to_damage = 1,
     effect_duration = 30,
     strike_effect =
@@ -78,12 +132,13 @@ data:extend
     animation = {
       filename = entity .. "heat-smoke/nothing.png",
       flags = { "smoke" },
-      line_length = 8,
       width = 1,
       height = 1,
-      frame_count = 60,
+      repeat_count = 60,
+      frame_count = 1,
       priority = "high",
       animation_speed = 0.15,
+      blend_mode = "additive",
     },
     glow_animation = {
       filename = entity .. "heat-smoke/heat-smoke-glow.png",
@@ -99,7 +154,66 @@ data:extend
     },
     movement_slow_down_factor = 0.1,
   },
+  --cooler 2 smoke
+  {
+    type = "trivial-smoke",
+    name = "sun-heat-cooler-smoke",
+    animation =
+    {
+      width = 152,
+      height = 120,
+      line_length = 5,
+      frame_count = 60,
+      shift = {0, 0},
+      priority = "high",
+      animation_speed = 0.3,
+      filename = entity .. "sun_heat_cooler_2/smoke.png", --"__base__/graphics/entity/smoke/smoke.png",
+      flags = { "smoke" },
+      --scale = 1.5,
+    },
+    cyclic = true,
+    duration = 240,
+    fade_in_duration = 120,
+    fade_away_duration = 120,
+    start_scale = 0.7,
+    end_scale = 5,
+    color = {1, 1, 1, 0.5},
+    affected_by_wind = false,
+    movement_slow_down_factor = 0.5
+  },
+  {
+    type = "particle-source",
+    name = "sun-heat-cooler-particle-source",
+    flags = {"not-on-map", "not-blueprintable", "not-deconstructable", "not-selectable-in-game"},
+    collision_mask = {layers = {}},
+    time_to_live = 4294967295,
+    time_before_start = 100,
+    height = 0.5,
+    height_deviation = 0.01,
+    vertical_speed = -0.02,
+    vertical_speed_deviation = 0.01,
+    horizontal_speed = 0,
+    horizontal_speed_deviation = 0.01,
+    smoke =
+    {
+      {
+        name = "sun-heat-cooler-smoke",
+        frequency = 0.015,
+        position = {-1.3, 0},
+        deviation = {0.3, 0.3},
+        height = 0,
+        height_deviation = 0,
+        starting_vertical_speed = -0.01,
+        starting_vertical_speed_deviation = 0.01,
+        vertical_speed_slowdown = 0.965
+      }
+    },
+  },
 
+})
+
+
+data:extend({
 
 --    ██   ██ ███████  █████  ████████          █████  ████████ ████████ ██████   █████   ██████ ████████  ██████  ██████           ██ 
 --    ██   ██ ██      ██   ██    ██            ██   ██    ██       ██    ██   ██ ██   ██ ██         ██    ██    ██ ██   ██         ███ 
@@ -116,11 +230,11 @@ data:extend
     icon = icons .. "sun_heat_cooler_1.png",
     range_elongation = 4.0, -------------------------------------------------------------------------------------RANGE
     flags = {"placeable-neutral", "player-creation"},
-    minable = {mining_time = 0.1, result = "sun_heat_cooler_1"},
-    max_health = 40,
+    minable = {mining_time = 0.2, result = "sun_heat_cooler_1"},
+    max_health = 200,
     corpse = "sun_heat_cooler_1-remnants",
     dying_explosion =  "selector-combinator-explosion",
-    factoriopedia_simulation = simulations.factoriopedia_lightning_rod,
+    factoriopedia_simulation = sun_heat_cooler_1sim,
     surface_conditions = {{ property = "pressure", min = 701, max = 701}},
     resistances =
     {
@@ -133,10 +247,10 @@ data:extend
     selection_box = {{-0.5, -0.5}, {0.5, 0.5}},
     lightning_strike_offset = {0, 0},
     damaged_trigger_effect = hit_effects.entity({{-0.2, -0.2},{0.2, 0.2}}),
-    open_sound = sounds.electric_network_open,
-    close_sound = sounds.electric_network_close,
-    working_sound =
-    {
+    open_sound = sounds.metal_small_open,
+    close_sound = sounds.metal_small_close,
+    working_sound = nil,
+    --[[{
 
       main_sounds =
       {
@@ -152,7 +266,7 @@ data:extend
         },
       },
       max_sounds_per_prototype = 3,
-    },
+    },]]
     chargable_graphics = {
       picture = {
         layers = {
@@ -185,24 +299,6 @@ data:extend
         }
       },
       charge_animation = nil,
-      --[[{
-        layers =
-        {
-          {
-            filename = entity .. "sun_heat_cooler_1/sun_heat_cooler_1-charge.png",
-            run_mode = "forward",
-            width = 320,
-            height = 320,
-            line_length = 4,
-            frame_count = 8,
-            priority = "high",
-            --blend_mode = "additive",
-            scale = 0.15,
-            --draw_as_glow = true,
-            animation_speed = 1/10,
-          }
-        }
-      },]]
       charge_animation_is_looped = true,
       charge_cooldown = 10,
     },
@@ -245,14 +341,6 @@ data:extend
     }
   },
 
-
-
-
-
-
-
-
-
 --    ██   ██ ███████  █████  ████████          █████  ████████ ████████ ██████   █████   ██████ ████████  ██████  ██████          ██████  
 --    ██   ██ ██      ██   ██    ██            ██   ██    ██       ██    ██   ██ ██   ██ ██         ██    ██    ██ ██   ██              ██ 
 --    ███████ █████   ███████    ██            ███████    ██       ██    ██████  ███████ ██         ██    ██    ██ ██████           █████  
@@ -264,13 +352,15 @@ data:extend
     name = "sun_heat_cooler_2",
     icon = icons .. "sun_heat_cooler_2.png",
     range_elongation = 47.0, -------------------------------------------------------------------------------------RANGE
+    efficiency = 0.5,
     flags = {"placeable-neutral", "player-creation"},
     minable = {mining_time = 0.1, result = "sun_heat_cooler_2"},
     max_health = 200,
     corpse = "sun_heat_cooler_2-remnants",
     dying_explosion = "chemical-plant-explosion",
-    factoriopedia_simulation = simulations.factoriopedia_lightning_rod,
+    factoriopedia_simulation = sun_heat_cooler_2sim,
     surface_conditions = {{ property = "pressure", min = 701, max = 701}},
+    alert_icon_scale = 0,
     resistances =
     {
       {
@@ -280,10 +370,10 @@ data:extend
     },
     collision_box = {{-1.15, -1.15}, {1.15, 1.15}},
     selection_box = {{-1.5, -1.5}, {1.5, 1.5}},
-    lightning_strike_offset = {0, -1},
+    lightning_strike_offset = {0, 0},
     damaged_trigger_effect = hit_effects.entity({{-1.2, -1.2},{1.2, 1.2}}),
-    open_sound = sounds.electric_network_open,
-    close_sound = sounds.electric_network_close,
+    open_sound = sounds.metal_small_open,
+    close_sound = sounds.metal_small_close,
     working_sound =
     {
       main_sounds =
@@ -294,12 +384,21 @@ data:extend
           sound =
           {
             filename = sound .. "sun_heat_cooler_2-charge.ogg",
-            volume = 1,
+            volume = 0.3,
             audible_distance_modifier = 0.5,
           },
         },
       },
       max_sounds_per_prototype = 3,
+    },
+    efficiency = 0.5,
+    energy_source =
+    {
+      type = "electric",
+      buffer_capacity = "10MJ",
+      usage_priority = "primary-output",
+      output_flow_limit = "10MJ",
+      drain = "2.5MJ"
     },
     chargable_graphics = {
       picture = {
@@ -324,26 +423,8 @@ data:extend
         }
       },
       charge_animation = nil,
-      --[[{
-        layers =
-        {
-          {
-            filename = entity .. "sun_heat_cooler_2/sun_heat_cooler_2-charge.png",
-            run_mode = "forward",
-            width = 320,
-            height = 320,
-            line_length = 4,
-            frame_count = 8,
-            priority = "high",
-            --blend_mode = "additive",
-            scale = 0.5,
-            --draw_as_glow = true,
-            animation_speed = 1/10,
-          }
-        }
-      },]]
       charge_animation_is_looped = true,
-      charge_cooldown = 10,
+      charge_cooldown = 100,
     },
     water_reflection =
     {
@@ -439,7 +520,7 @@ data:extend
     type = "recipe",
     name = "sun_heat_cooler_2",
     categories = {"cryogenics"},
-    surface_conditions = {{ property = "pressure", min = 701, max = 701}},
+    --surface_conditions = {{ property = "pressure", min = 701, max = 701}},
     energy_required = 5,
     ingredients =
     {
@@ -451,13 +532,7 @@ data:extend
     results = {{type="item", name="sun_heat_cooler_2", amount=1}},
     enabled = false,
     sort_item_ingredients = false,
-    crafting_machine_tint =
-    {
-      primary = {r = 0.460, g = 0.188, b = 0.649, a = 1.000}, -- #752fa5ff
-      secondary = {r = 0.489, g = 0.484, b = 0.381, a = 1.000}, -- #7c7b61ff
-      tertiary = {r = 0.196, g = 0.101, b = 0.101, a = 1.000}, -- #311919ff
-      quaternary = {r = 0.518, g = 0.539, b = 0.993, a = 1.000}, -- #8489fdff
-    }
+    
   },
 
 --    ████████ ███████  ██████ ██   ██ 
@@ -488,7 +563,6 @@ data:extend
         {"logistic-science-pack", 1},
         {"chemical-science-pack", 1},
         {"military-science-pack", 1},
-        {"utility-science-pack", 1},
         {"space-science-pack", 1},
         {"metallurgic-science-pack", 1}
       },
@@ -520,7 +594,6 @@ data:extend
         {"military-science-pack", 1},
         {"utility-science-pack", 1},
         {"space-science-pack", 1},
-        {"metallurgic-science-pack", 1},
         {"cryogenic-science-pack", 1},
       },
       time = 30
@@ -535,10 +608,21 @@ data:extend
   {
     type = "build-entity-achievement",
     name = "moshine_build_sun_cooler",
-    order = "a[progress]-a[automate-this]",
+    order = "m[moshine]-ggg",
     to_build = "sun_heat_cooler_2",
     icon = technology .. "moshine_build_sun_cooler.png",
     icon_size = 128
   },
-}
+  --[[{
+    type = "kill-achievement",
+    name = "moshine_sun_heat_destroyed",
+    order = "f[kill]-l[moshine_sun_heat_destroyed]",
+    type_to_kill = {"big-demolisher", },
+    --personally = false,
+    damage_dealer = "sun_heat",
+    amount = 1,
+    icon = technology .. "moshine_sun_heat_destroyed.png",
+    icon_size = 128
+  },]]
+})
 end

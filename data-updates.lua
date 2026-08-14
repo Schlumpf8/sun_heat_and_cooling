@@ -18,7 +18,7 @@ local exemptlist = {
 
 if data.raw.planet["moshine"] then
 
-  local freq = 15
+  local freq = 100
   if settings.startup["moshine_heat_intensity"] and settings.startup["moshine_heat_intensity"].value then
     freq = settings.startup["moshine_heat_intensity"].value
   end
@@ -26,7 +26,7 @@ if data.raw.planet["moshine"] then
   data.raw.planet["moshine"].lightning_properties =
   {
     lightnings_per_chunk_per_tick = freq / 300,
-    search_radius = 3.0,
+    search_radius = 4.0,
     lightning_types = {"sun_heat"},
     lightning_multiplier_at_day = 1,
     lightning_multiplier_at_night = 0,
@@ -35,7 +35,7 @@ if data.raw.planet["moshine"] then
       priority = "extra-high-no-scale",
       width = 64,
       height = 64,
-      scale = 0.8,
+      scale = 1,
       flags = {"icon"}
     },
     priority_rules =
