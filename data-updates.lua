@@ -14,6 +14,7 @@ local exemptlist = {
 "linked-belt","loader-1x1","loader","transport-belt","underground-belt",
 "tile","optimized-decorative","entity-ghost","corpse","rail-remnants",
 "turret","ammo-turret","fluid-turret",
+"plant",
 }
 
 if data.raw.planet["moshine"] then
