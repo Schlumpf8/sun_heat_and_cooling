@@ -1,5 +1,15 @@
-local moshine_smoke_entities = {}
-local moshine_patch_entities = {}
+local function initialize_moshine_storage()
+    if not storage.moshine_smoke_entities then storage.moshine_smoke_entities = {} end
+    if not storage.moshine_patch_entities then storage.moshine_patch_entities = {} end
+end
+
+script.on_init(function()
+    initialize_moshine_storage()
+end)
+
+script.on_configuration_changed(function()
+    initialize_moshine_storage()
+end)
 
 script.on_event({defines.events.on_built_entity, defines.events.on_robot_built_entity, defines.events.script_raised_built, defines.events.script_raised_revive}, function(event)
     local entity = event.entity
@@ -43,10 +53,11 @@ script.on_event({defines.events.on_built_entity, defines.events.on_robot_built_e
         end
 
         if smoke then
-            moshine_smoke_entities[entity.unit_number] = smoke
+            storage.moshine_smoke_entities[entity.unit_number] = smoke
         end
+
         if patch then
-            moshine_patch_entities[entity.unit_number] = patch
+            storage.moshine_patch_entities[entity.unit_number] = patch
         end
     end
 end)
@@ -55,18 +66,17 @@ script.on_event({defines.events.on_entity_died, defines.events.on_pre_player_min
     local entity = event.entity
     if entity.valid then
         if not entity.unit_number then return end
-        if (entity.name == "sun_heat_cooler_1" or entity.name == "sun_heat_cooler_2") then
-            local smoke = moshine_smoke_entities[entity.unit_number]
-            local patch = moshine_patch_entities[entity.unit_number]
+        if entity.name == "sun_heat_cooler_1" or entity.name == "sun_heat_cooler_2" then
+            local smoke = storage.moshine_smoke_entities[entity.unit_number]
+            local patch = storage.moshine_patch_entities[entity.unit_number]
             if smoke and smoke.valid then
                 smoke.destroy()
             end
             if patch and patch.valid then
                 patch.destroy()
             end
-            moshine_smoke_entities[entity.unit_number] = nil
-            moshine_patch_entities[entity.unit_number] = nil
+            storage.moshine_smoke_entities[entity.unit_number] = nil
+            storage.moshine_patch_entities[entity.unit_number] = nil
         end
     end
 end)
-
