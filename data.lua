@@ -271,17 +271,20 @@ data:extend({
     hidden = true,
     flags = {"not-selectable-in-game"},
     --collision_box = {{-0.01, -0.01}, {0.01, 0.01}},
+    collision_box = {{-5, -5}, {5, 5}},
     collision_mask = {layers = {}},
     lower_render_layer = "decals",
     lower_pictures =
     {
       {
         filename = entity .. "sun_heat_cooler_1/sun_heat_cooler_1-cables.png",
+        flags = {"terrain"},
         width = 640,
         height = 640,
         line_length = 1,
         priority = "low",
         scale = 0.5,
+        blend_mode = "additive",
       },
     },
   },
@@ -293,6 +296,7 @@ data:extend({
     hidden = true,
     flags = {"not-selectable-in-game"},
     --collision_box = {{-0.01, -0.01}, {0.01, 0.01}},
+    collision_box = {{-23, -23}, {23, 23}},
     collision_mask = {layers = {}},
     lower_render_layer = "ground-patch",
     --render_layer = "elevated-higher-object",
@@ -303,11 +307,13 @@ data:extend({
         filename = entity .. "sun_heat_cooler_2/sun_heat_cooler_2-shield.png",
         --width = 2048,
         --height = 2048,
-        width = 3196,
-        height = 3196,
-        scale = 1,
-        draw_as_glow = true,
+        flags = {"terrain"},
+        width = 1618,
+        height = 1618,
+        scale = 0.9,
+        --draw_as_glow = true,
         blend_mode = "additive",
+        --occludes_light = false,
         --apply_special_effect = true,
         --tint = {1,1,1,0.2},
       },
@@ -394,6 +400,7 @@ data:extend({
             priority = "high",
             scale = 0.5,
           },
+          --[[
           {
             filename = entity .. "sun_heat_cooler_1/sun_heat_cooler_1-shadow.png",
             width = 128,
@@ -402,7 +409,9 @@ data:extend({
             priority = "high",
             draw_as_shadow = true,
             scale = 0.5,
-          },--[[
+          },
+          ]]
+          --[[
           {
             filename = entity .. "sun_heat_cooler_1/sun_heat_cooler_1-cables.png",
             width = 640,
@@ -411,7 +420,8 @@ data:extend({
             priority = "low",
             draw_as_shadow = true,
             scale = 0.5,
-          },]]
+          },
+          ]]
         }
       },
       charge_animation = nil,

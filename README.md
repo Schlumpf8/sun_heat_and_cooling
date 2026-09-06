@@ -1,5 +1,4 @@
 # sun_heat_and_cooling
 
-beta
-
-Cooler graphics mainly uses an asset from Periodic Madness by Mr.SmoothieHuman (MIT)
+Cooler 1 use graphics from Khemia (by GabeWithGlasses, MIT)
+Cooler 2 use graphics from Hurricane046 (CC BY) and ADKrig (CC BY)

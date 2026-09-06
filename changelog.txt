@@ -1,9 +1,22 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.3.5
+Date: 2026-09-02
+  Balancing:
+    - Removed inserters and belt splitters heat damage
+---------------------------------------------------------------------------------------------------
+Version: 1.3.4
+Date: 2026-08-28
+  Graphics:
+    - Reworked cooler 1 graphics
+    - Made cooler 1 ground graphics similar to cooler 2, so it looks less intrusive and doesn't look strange over lava
+    - Made cooler 2 ground graphics smaller, more discreet, non-lit
+    - Prevented ground sprites from visually despawning when the camera wasn't seeing the center of it
+---------------------------------------------------------------------------------------------------
 Version: 1.3.3
 Date: 2026-08-24
   Changes:
     - Made opticalfiber-storage-tank not immune
-  Graphics
+  Graphics:
     - Sun warning icon made more visible with "no power" also active
 ---------------------------------------------------------------------------------------------------
 Version: 1.3.2
